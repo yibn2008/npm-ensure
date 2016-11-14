@@ -1,6 +1,6 @@
 {
   "name": "npm-ensure",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "ensure your package is good to commit/publish:",
   "main": "index.js",
   "bin": {
@@ -19,7 +19,7 @@
   "scripts": {
     "test": "mocha test/*.test.js",
     "precommit": "node bin/npm-ensure -t deps",
-    "release": "node bin/npm-ensure -t changelog && npm test && git add . && git commit -m 'chore: bump to $npm_package_version' && git push && npm publish"
+    "release": "node bin/npm-ensure -t changelog && npm test && git release $npm_package_version && npm publish"
   },
   "repository": {
     "type": "git",
