@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/*.test.js"
+    "test": "mocha test/*.test.js",
+    "precommit": "node bin/npm-ensure"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
   "devDependencies": {
     "assert-plus": "^1.0.0",
     "commander": "^2.9.0",
+    "husky": "^0.11.9",
     "mocha": "^3.1.2"
   }
 }
