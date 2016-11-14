@@ -10,8 +10,9 @@ describe('test checks', function () {
   it('should check all deps', function () {
     let missing = checks.checkDeps(baseDir, {
       checkDirs: [
-        '*.js',
-        '*.css'
+        'lib/*.js',
+        'lib/*.css',
+        'bin/*'
       ],
       'ignores': [
         'ignore-*'
@@ -29,7 +30,8 @@ describe('test checks', function () {
       'dep8',
       'dep9',
       'dep10',
-      'dep11'
+      'dep11',
+      'dep12'
     ])
   })
 

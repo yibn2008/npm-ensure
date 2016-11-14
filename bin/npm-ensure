@@ -2,19 +2,21 @@
 
 'use strict'
 
+const path = require('path')
 const chalk = require('chalk')
-const pkg = require('../package.json')
+const version = require('../package.json').version
 const program = require('commander')
 const checks = require('..')
 
 program
-  .version(pkg.version)
+  .version(version)
   .option('-t, --types <types>', 'ensure check types (e.g: deps,changelog)')
   .parse(process.argv)
 
 const baseDir = program.basedir || process.cwd()
 
 function check () {
+  let pkg = require(path.join(baseDir, 'package.json'))
   let ensure = pkg.ensure || {}
   let types = (program.types || 'all').split(',')
   let isAll = types.indexOf('all') === 0

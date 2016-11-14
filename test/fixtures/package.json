@@ -4,5 +4,13 @@
   "dependencies": {
     "defined1": "1.1.1",
     "defined2": "0.0.0"
+  },
+  "ensure": {
+    "deps": {
+      "checkDirs": [
+        "lib/*.js",
+        "lib/*.css"
+      ]
+    }
   }
 }

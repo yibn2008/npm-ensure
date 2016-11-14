@@ -122,7 +122,10 @@ function findFiles (baseDir, rules) {
       ],
       realpath: true
     }).forEach(file => {
-      if (DEP_CHECK_EXTS.indexOf(path.extname(file)) >= 0) {
+      let extname = path.extname(file)
+
+      // no ext, means maybe bin/* files
+      if (!extname || DEP_CHECK_EXTS.indexOf(path.extname(file)) >= 0) {
         if (matches.indexOf(file) < 0) {
           matches.push(file)
         }
@@ -146,6 +149,7 @@ function resolveFilesDeps (files) {
     debug('resolve file %s', file)
 
     switch (extname) {
+      case '':    // no extname, will treat as js file
       case '.js':
       case '.jsx':
       case '.es':
@@ -187,6 +191,8 @@ function checkDeps (baseDir, options) {
   options = options || {}
   options.checkDirs = options.checkDirs || [ '*.js' ]
   options.ignores = options.ignores || []
+
+  debug('check deps: baseDir = %s, options = %j', baseDir, options)
 
   // minimatchs
   let ignores = []
