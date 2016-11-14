@@ -1,0 +1,39 @@
+{
+  "name": "npm-ensure",
+  "version": "1.0.0",
+  "description": "ensure your package is good to commit/publish:",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yibn2008/npm-ensure.git"
+  },
+  "keywords": [
+    "npm-ensure",
+    "check",
+    "dependencies"
+  ],
+  "author": "yibn2008",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yibn2008/npm-ensure/issues"
+  },
+  "homepage": "https://github.com/yibn2008/npm-ensure#readme",
+  "dependencies": {
+    "builtin-modules": "^1.1.1",
+    "chalk": "^1.1.3",
+    "debug": "^2.3.2",
+    "glob": "^7.1.1",
+    "minimatch": "^3.0.3"
+  },
+  "devDependencies": {
+    "assert-plus": "^1.0.0",
+    "commander": "^2.9.0",
+    "mocha": "^3.1.2"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "test",
+  "version": "1.1.1",
+  "dependencies": {
+    "defined1": "1.1.1",
+    "defined2": "0.0.0"
+  }
+}

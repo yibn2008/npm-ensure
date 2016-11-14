@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+'use strict'
+
+const chalk = require('chalk')
+const pkg = require('../package.json')
+const program = require('commander')
+const checks = require('..')
+
+program
+  .version(pkg.version)
+  .option('-t, --types <types>', 'ensure check types (e.g: deps,changelog)')
+  .parse(process.argv)
+
+const baseDir = program.basedir || process.cwd()
+
+function check () {
+  let ensure = pkg.ensure || {}
+  let types = (program.types || 'all').split(',')
+  let isAll = types.indexOf('all') === 0
+  let pass = true
+
+  // check dependencies
+  if (isAll || types.indexOf('deps') >= 0) {
+    console.log(chalk.cyan('==>') + ' check dependencies')
+
+    try {
+      let missing = checks.checkDeps(baseDir, ensure.deps)
+
+      if (missing.length) {
+        console.log('The following dependencies are not defined:\n')
+        missing.forEach(dep => {
+          console.log(chalk.red(' - ' + dep))
+        })
+        console.log('\ntotal %s packages', missing.length)
+
+        // set pass flag
+        pass = false
+      } else {
+        console.log(chalk.green('✓ OK'))
+      }
+    } catch (err) {
+      console.error(chalk.red('check error: ' + err.stack))
+
+      // set pass flag
+      pass = false
+    }
+
+    console.log()
+  }
+
+  // check changelog
+  if (isAll || types.indexOf('changelog') >= 0) {
+    console.log(chalk.cyan('==>') + ' check changelog')
+
+    try {
+      if (checks.checkChangelog(baseDir, ensure.changelog)) {
+        console.log(chalk.green('✓ OK'))
+      } else {
+        console.log(chalk.red('changelog for current version is NOT exists'))
+
+        // set pass flag
+        pass = false
+      }
+    } catch (err) {
+      console.error(chalk.red('check error: ' + err.stack))
+
+      // set pass flag
+      pass = false
+    }
+  }
+
+  return pass
+}
+
+check()
