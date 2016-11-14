@@ -120,6 +120,7 @@ function findFiles (baseDir, rules) {
         '.*',
         '/node_modules'
       ],
+      nodir: true,
       realpath: true
     }).forEach(file => {
       let extname = path.extname(file)
