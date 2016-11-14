@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "ensure your package is good to commit/publish:",
   "main": "index.js",
+  "bin": {
+    "npm-ensure": "bin/npm-ensure"
+  },
   "directories": {
     "test": "test"
   },
