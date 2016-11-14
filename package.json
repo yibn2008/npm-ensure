@@ -1,6 +1,6 @@
 {
   "name": "npm-ensure",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ensure your package is good to commit/publish:",
   "main": "index.js",
   "bin": {
