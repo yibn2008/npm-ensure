@@ -73,4 +73,6 @@ function check () {
   return pass
 }
 
-check()
+if (!check()) {
+  process.exit(1)
+}
