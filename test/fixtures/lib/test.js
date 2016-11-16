@@ -7,9 +7,9 @@ import { D, [ C ] } from 'dep5';
 
 //--------------- require --------------//
 require('dep6');
-require("dep7");
-require( "dep8" );
-require ( "dep9" );
+require("dep7/a/b/c");
+require( "dep8/a/b/c.js" );
+require ( "dep9/xxx/main.jsx" );
 require.resolve("dep10");
 
 //--------------- for ignore --------------//
@@ -27,9 +27,21 @@ require('defined2');
 //--------------- in-comment --------------//
 
 // import 'will-not-resolve1';
+
 // require('will-not-resolve2');
+
+// require('will-not-resolve3');
+
+// @example:  require('enquire.js')
 
 /**
  * import 'will-not-resolve3';
  * require('will-not-resolve4');
  */
+
+//------------- complex keywords -----------//
+parent.walkAtRules('import', node => {
+  const file = node.source.input.file || '';
+
+  console.log('import "lib/xxx.json"')
+})

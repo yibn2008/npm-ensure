@@ -8,9 +8,9 @@ const glob = require('glob')
 const Minimatch = require("minimatch").Minimatch
 const builtinModules = require('builtin-modules')
 
-const IMPORT_RULE = /import\s*([\w\{\}\[\],\s]+)?\s*(['"])([^'"]+)\2/g
-const REQUIRE_RULE = /require(\.resolve)?\s*\(\s*(['"])([^'"]+)\2\s*\)/g
-const AT_IMPORT_RULE = /@import\s+(['"])([^'"]+)\1/g
+const IMPORT_RULE = /import\s*([\w\{\}\[\],\s]+)?\s*(['"])([\w\-\.@~\/]+)\2/g
+const REQUIRE_RULE = /require(\.resolve)?\s*\(\s*(['"])([\w\-\.@~\/]+)\2\s*\)/g
+const AT_IMPORT_RULE = /@import\s+(['"])([\w\-\.@~\/]+)\1/g
 
 const DEFAULT_CHANGELOGS = [
   'changelog.md',
@@ -55,13 +55,19 @@ function findComments (text) {
   return ranges
 }
 
-function parseModule (dep, strictMode) {
+function parseModule (dep, strictMode, ignores) {
   if (dep.startsWith('.') || (strictMode && !dep.startsWith('~'))) {
     return false
   }
 
   if (dep.startsWith('~')) {
     dep = dep.substring(1)
+  }
+
+  // skip ignored modules
+  if (ignores.find(mm => mm.match(dep))) {
+    debug('ignore match %s, skip it', dep)
+    return false
   }
 
   if (dep.startsWith('@')) {
@@ -79,7 +85,7 @@ function inCommentRanges (index, ranges) {
   })
 }
 
-function depResolve (content, rules, parseModule) {
+function depResolve (content, rules, resolveModule) {
   let commentRanges = findComments(content)
   let matches = []
   let depModules = []
@@ -88,14 +94,15 @@ function depResolve (content, rules, parseModule) {
     rule.lastIndex = 0
 
     while (matches = (rule.exec(content))) {
+      let startIndex = rule.lastIndex - matches[0].length
 
       // skip comments
-      if (inCommentRanges(rule.lastIndex, commentRanges)) {
+      if (inCommentRanges(startIndex, commentRanges)) {
         debug('skip comment for %s', matches[0])
         continue
       }
 
-      let module = parseModule(matches)
+      let module = resolveModule(matches)
 
       if (module && depModules.indexOf(module) < 0) {
         depModules.push(module)
@@ -139,7 +146,7 @@ function findFiles (baseDir, rules) {
   return matches
 }
 
-function resolveFilesDeps (files) {
+function resolveFilesDeps (files, ignores) {
   let depModules = []
 
   files.forEach(file => {
@@ -155,7 +162,7 @@ function resolveFilesDeps (files) {
       case '.jsx':
       case '.es':
         deps = depResolve(content, [ IMPORT_RULE, REQUIRE_RULE ], matches => {
-          return parseModule(matches[3], false)
+          return parseModule(matches[3], false, ignores)
         })
         break
       case '.scss':
@@ -163,7 +170,7 @@ function resolveFilesDeps (files) {
       case '.css':
       case '.less':
         deps = depResolve(content, [ AT_IMPORT_RULE ], matches => {
-          return parseModule(matches[2], true)
+          return parseModule(matches[2], true, ignores)
         })
         break
     }
@@ -203,7 +210,7 @@ function checkDeps (baseDir, options) {
 
   // find deps
   let files = findFiles(baseDir, options.checkDirs)
-  let depModules = resolveFilesDeps(files)
+  let depModules = resolveFilesDeps(files, ignores)
 
   // check dependencies
   let pkg = require(path.join(baseDir, 'package.json'))
@@ -213,12 +220,6 @@ function checkDeps (baseDir, options) {
   depModules.forEach(dep => {
     // skip builtin-modules
     if (builtinModules.indexOf(dep) >= 0) {
-      return
-    }
-
-    // skip ignored modules
-    if (ignores.find(mm => mm.match(dep))) {
-      debug('ignore match %s, skip it', dep)
       return
     }
 

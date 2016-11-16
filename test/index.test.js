@@ -15,7 +15,8 @@ describe('test checks', function () {
         'bin/*'
       ],
       'ignores': [
-        'ignore-*'
+        'ignore-*',
+        '*/*.json'
       ]
     })
 

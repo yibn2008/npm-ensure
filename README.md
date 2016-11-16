@@ -10,13 +10,46 @@ ensure your package is good to commit/publish:
 You can use `npm-ensure` command under the package dir which you want to check.
 
 ```bash
+
+  Usage: npm-ensure [options]
+
+  Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -t, --types <types>  ensure check types (e.g: deps,changelog)
+
+```
+
+Example:
+
+```bash
 $ cd path/to/some-package
+$ npm-ensure -t deps
+==> check dependencies
+The following dependencies are not defined:
+
+ - co
+ - commander
+
+total 2 packages
+
+$ npm-ensure -t changelog
+==> check changelog
+changelog for current version is NOT exists
+
 $ npm-ensure
 ==> check dependencies
-✓ OK
+The following dependencies are not defined:
+
+ - co
+ - commander
+
+total 2 packages
 
 ==> check changelog
-✓ OK
+changelog for current version is NOT exists
+
 ```
 
 Or you can add it as precommit/prepublish hook to check before commit/publish.
