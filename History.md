@@ -1,4 +1,9 @@
 
+1.0.5 / 2016-12-20
+==================
+
+  * refactor: use dependency-analyze to parse deps
+
 1.0.4 / 2016-11-16
 ==================
 
