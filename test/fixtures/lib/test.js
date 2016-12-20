@@ -3,7 +3,7 @@ import 'dep1';
 import "dep2";
 import A from 'dep3';
 import { B } from 'dep4';
-import { D, [ C ] } from 'dep5';
+import { D, C } from 'dep5';
 
 //--------------- require --------------//
 require('dep6');

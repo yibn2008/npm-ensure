@@ -2,21 +2,17 @@
 
 const fs = require('fs')
 const path = require('path')
-const assert = require('assert')
 const debug = require('debug')('npm-ensure')
 const glob = require('glob')
-const Minimatch = require("minimatch").Minimatch
+const analyze = require('dependency-analyze')
+const Minimatch = require('minimatch').Minimatch
 const builtinModules = require('builtin-modules')
-
-const IMPORT_RULE = /import\s*([\w\{\}\[\],\s]+)?\s*(['"])([\w\-\.@~\/]+)\2/g
-const REQUIRE_RULE = /require(\.resolve)?\s*\(\s*(['"])([\w\-\.@~\/]+)\2\s*\)/g
-const AT_IMPORT_RULE = /@import\s+(['"])([\w\-\.@~\/]+)\1/g
 
 const DEFAULT_CHANGELOGS = [
   'changelog.md',
   'changelog',
   'history.md',
-  'history',
+  'history'
 ]
 const DEP_CHECK_EXTS = [
   '.js',
@@ -27,33 +23,6 @@ const DEP_CHECK_EXTS = [
   '.css',
   '.less'
 ]
-
-function findComments (text) {
-  let ranges = []
-  let index = 0
-  let ruleMap = {
-    '//': '\n',
-    '/*': '*/'
-  }
-  let startRule = /\/\/|\/\*/g
-  let matches
-
-  while (matches = startRule.exec(text)) {
-    let endChars = ruleMap[matches[0]]
-    let start = startRule.lastIndex - matches[0].length
-    let end = text.indexOf(endChars, startRule.lastIndex)
-
-    if (end < 0) {
-      end = Infinity
-    }
-
-    ranges.push([ start, end ])
-
-    startRule.lastIndex = end
-  }
-
-  return ranges
-}
 
 function parseModule (dep, strictMode, ignores) {
   if (dep.startsWith('.') || (strictMode && !dep.startsWith('~'))) {
@@ -79,44 +48,10 @@ function parseModule (dep, strictMode, ignores) {
   return dep
 }
 
-function inCommentRanges (index, ranges) {
-  return ranges.find(r => {
-    return index >= r[0] && index < r[1]
-  })
-}
-
-function depResolve (content, rules, resolveModule) {
-  let commentRanges = findComments(content)
-  let matches = []
-  let depModules = []
-
-  rules.forEach(rule => {
-    rule.lastIndex = 0
-
-    while (matches = (rule.exec(content))) {
-      let startIndex = rule.lastIndex - matches[0].length
-
-      // skip comments
-      if (inCommentRanges(startIndex, commentRanges)) {
-        debug('skip comment for %s', matches[0])
-        continue
-      }
-
-      let module = resolveModule(matches)
-
-      if (module && depModules.indexOf(module) < 0) {
-        depModules.push(module)
-      }
-    }
-  })
-
-  return depModules
-}
-
 function findFiles (baseDir, rules) {
   let matches = []
 
-  for (let i = 0; i < rules.length; i ++) {
+  for (let i = 0; i < rules.length; i++) {
     let rule = rules[i]
 
     debug('find files from %s: rule = %s', baseDir, rule)
@@ -161,17 +96,17 @@ function resolveFilesDeps (files, ignores) {
       case '.js':
       case '.jsx':
       case '.es':
-        deps = depResolve(content, [ IMPORT_RULE, REQUIRE_RULE ], matches => {
-          return parseModule(matches[3], false, ignores)
-        })
+        deps = analyze.parseJS(content).map(dep => {
+          return parseModule(dep, false, ignores)
+        }).filter(m => m)
         break
       case '.scss':
       case '.sass':
       case '.css':
       case '.less':
-        deps = depResolve(content, [ AT_IMPORT_RULE ], matches => {
-          return parseModule(matches[2], true, ignores)
-        })
+        deps = analyze.parseCSS(content).map(dep => {
+          return parseModule(dep, true, ignores)
+        }).filter(m => m)
         break
     }
 
