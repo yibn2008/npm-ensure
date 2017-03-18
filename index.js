@@ -150,8 +150,17 @@ function checkDeps (baseDir, options) {
 
   // check dependencies
   let pkg = require(path.join(baseDir, 'package.json'))
-  let dependencies = pkg.dependencies || {}
+  let dependencies = Object.assign(
+    {},
+    pkg.dependencies || {},
+    pkg.peerDependencies || {},
+    pkg.optionDependencies || {}
+  )
   let missing = []
+
+  if (pkg.peerDependencies) {
+    Object.assign()
+  }
 
   depModules.forEach(dep => {
     // skip builtin-modules
