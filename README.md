@@ -72,6 +72,9 @@ use `ensure` field in package.json to config npm-ensure:
         "src/**/*",
         "bin/**/*"
       ],
+      "ignoreDirs": [
+        "src/do-not-check/**/*"
+      ],
       "ignores": [
         "babel-*"
       ]
@@ -83,11 +86,12 @@ use `ensure` field in package.json to config npm-ensure:
 }
 ```
 
-### Notice
+### Tips
 
-1. `deps.checkDirs`, specifies which directories need to be checked for dependencies
-2. `deps.ignores`, ignore these modules when check dependencies (support glob match syntax)
-3. `changelog.file`, specifies which file is CHANGELOG file
+- `deps.checkDirs`, specifies which dirs/files need to be checked for dependencies
+- `deps.ignoreDirs`, specifies which dirs/files do NOT check
+- `deps.ignores`, ignore these modules when check dependencies (support glob match syntax)
+- `changelog.file`, specifies which file is CHANGELOG file
 
 ## License
 
