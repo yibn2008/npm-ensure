@@ -48,7 +48,7 @@ function parseModule (dep, strictMode, ignores) {
   return dep
 }
 
-function findFiles (baseDir, rules) {
+function findFiles (baseDir, rules, ignore) {
   let matches = []
 
   for (let i = 0; i < rules.length; i++) {
@@ -61,7 +61,7 @@ function findFiles (baseDir, rules) {
       ignore: [
         '.*',
         '/node_modules'
-      ],
+      ].concat(ignore),
       nodir: true,
       realpath: true
     }).forEach(file => {
@@ -133,6 +133,7 @@ function resolveFilesDeps (files, ignores) {
 function checkDeps (baseDir, options) {
   options = options || {}
   options.checkDirs = options.checkDirs || [ '*.js' ]
+  options.ignoreDirs = options.ignoreDirs || []
   options.ignores = options.ignores || []
 
   debug('check deps: baseDir = %s, options = %j', baseDir, options)
@@ -144,7 +145,7 @@ function checkDeps (baseDir, options) {
   })
 
   // find deps
-  let files = findFiles(baseDir, options.checkDirs)
+  let files = findFiles(baseDir, options.checkDirs, options.ignoreDirs)
   let depModules = resolveFilesDeps(files, ignores)
 
   // check dependencies

@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const cp = require('child_process')
 const assert = require('assert-plus')
 const checks = require('..')
 
@@ -10,9 +11,12 @@ describe('test checks', function () {
   it('should check all deps', function () {
     let missing = checks.checkDeps(baseDir, {
       checkDirs: [
-        'lib/*.js',
-        'lib/*.css',
+        'lib/**/*.js',
+        'lib/**/*.css',
         'bin/*'
+      ],
+      ignoreDirs: [
+        "lib/do-not-check/*"
       ],
       'ignores': [
         'ignore-*',

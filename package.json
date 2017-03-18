@@ -4,10 +4,17 @@
   "description": "ensure your package is good to commit/publish:",
   "main": "index.js",
   "bin": {
-    "npm-ensure": "bin/npm-ensure"
+    "npm-ensure": "bin/npm-ensure.js"
   },
-  "directories": {
-    "test": "test"
+  "scripts": {
+    "lint": "standard --fix && node bin/npm-ensure -t deps",
+    "test": "npm run lint && npm run test-local",
+    "test-local": "mocha test/*.test.js",
+    "test-cov": "istanbul cover _mocha --report lcov -- test/**/*.test.js",
+    "test-report": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "ci": "npm run lint && npm run test-cov && npm run test-report",
+    "precommit": "npm run lint",
+    "release": "node bin/npm-ensure -t changelog && npm test && git release $npm_package_version && npm publish"
   },
   "ensure": {
     "deps": {
@@ -26,12 +33,6 @@
     "ignore": [
       "/test"
     ]
-  },
-  "scripts": {
-    "lint": "standard --fix && node bin/npm-ensure -t deps",
-    "test": "mocha test/*.test.js",
-    "precommit": "npm run lint",
-    "release": "node bin/npm-ensure -t changelog && npm test && git release $npm_package_version && npm publish"
   },
   "repository": {
     "type": "git",
@@ -58,10 +59,12 @@
     "minimatch": "^3.0.3"
   },
   "devDependencies": {
-    "standard": "^8.2.0",
     "assert-plus": "^1.0.0",
     "commander": "^2.9.0",
+    "coveralls": "^2.12.0",
     "husky": "^0.11.9",
-    "mocha": "^3.1.2"
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.2",
+    "standard": "^8.2.0"
   }
 }

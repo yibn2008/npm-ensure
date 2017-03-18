@@ -8,8 +8,11 @@
   "ensure": {
     "deps": {
       "checkDirs": [
-        "lib/*.js",
-        "lib/*.css"
+        "lib/**/*.js",
+        "lib/**/*.css"
+      ],
+      "ignoreDirs": [
+        "lib/*/*"
       ]
     }
   }
