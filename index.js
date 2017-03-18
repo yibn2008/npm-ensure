@@ -158,10 +158,6 @@ function checkDeps (baseDir, options) {
   )
   let missing = []
 
-  if (pkg.peerDependencies) {
-    Object.assign()
-  }
-
   depModules.forEach(dep => {
     // skip builtin-modules
     if (builtinModules.indexOf(dep) >= 0) {
