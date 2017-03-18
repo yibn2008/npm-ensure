@@ -1,5 +1,8 @@
 # npm-ensure
 
+[![Build Status](https://travis-ci.org/yibn2008/npm-ensure.svg?branch=master)](https://travis-ci.org/yibn2008/npm-ensure)
+[![Coverage Status](https://coveralls.io/repos/github/yibn2008/npm-ensure/badge.svg)](https://coveralls.io/github/yibn2008/npm-ensure)
+
 ensure your package is good to commit/publish:
 
 - ensure npm deps satisfied
