@@ -5,7 +5,7 @@
 
 ensure your package is good to commit/publish:
 
-- ensure npm deps satisfied
+- ensure npm dependencies are complete
 - ensure changelog exists
 
 ## Usage

@@ -35,6 +35,7 @@ function check () {
           console.log(chalk.red(' - ' + dep))
         })
         console.log('\ntotal %s packages', missing.length)
+        console.log('you can install them by:\n\n  %s', chalk.cyan(`npm install ${missing.join(' ')} --save`))
 
         // set pass flag
         pass = false
