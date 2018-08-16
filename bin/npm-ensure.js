@@ -13,21 +13,31 @@ program
   .option('-t, --types <types>', 'ensure check types (e.g: deps,changelog)')
   .parse(process.argv)
 
-const baseDir = program.basedir || process.cwd()
+const basedir = program.basedir || process.cwd()
 
 function check () {
-  let pkg = require(path.join(baseDir, 'package.json'))
+  let pkg = require(path.join(basedir, 'package.json'))
   let ensure = pkg.ensure || {}
   let types = (program.types || 'all').split(',')
   let isAll = types.indexOf('all') === 0
   let pass = true
+  let files = []
+
+  // parse files
+  if (program.args && program.args.length) {
+    files = program.args.map(file => path.resolve(basedir, file))
+  }
 
   // check dependencies
   if (isAll || types.indexOf('deps') >= 0) {
     console.log(chalk.cyan('==>') + ' check dependencies')
 
     try {
-      let missing = checks.checkDeps(baseDir, ensure.deps)
+      let options = Object.assign({}, ensure.deps)
+      if (files.length) {
+        options.files = files
+      }
+      let missing = checks.checkDeps(basedir, options)
 
       if (missing.length) {
         console.log('The following dependencies are not defined:\n')
@@ -57,7 +67,7 @@ function check () {
     console.log(chalk.cyan('==>') + ' check changelog')
 
     try {
-      if (checks.checkChangelog(baseDir, ensure.changelog)) {
+      if (checks.checkChangelog(basedir, ensure.changelog)) {
         console.log(chalk.green('✓ OK'))
       } else {
         console.log(chalk.red('changelog for current version is NOT exists'))

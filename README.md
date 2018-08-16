@@ -96,6 +96,22 @@ use `ensure` field in package.json to config npm-ensure:
 - `deps.ignores`, ignore these modules when check dependencies (support glob match syntax)
 - `changelog.file`, specifies which file is CHANGELOG file
 
+## Work with `lint-staged`
+
+Only check git staged files with lint-staged:
+
+```json
+{
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "npm-ensure -t deps",
+      "git add"
+    ]
+  }
+}
+```
+
 ## License
 
 MIT

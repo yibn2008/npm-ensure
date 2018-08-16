@@ -33,16 +33,16 @@ function parseModule (dep, strictMode, ignores) {
     dep = dep.substring(1)
   }
 
-  // skip ignored modules
-  if (ignores.find(mm => mm.match(dep))) {
-    debug('ignore match %s, skip it', dep)
-    return false
-  }
-
   if (dep.startsWith('@')) {
     dep = dep.split('/', 2).join('/')
   } else {
     dep = dep.split('/', 1)[0]
+  }
+
+  // skip ignored modules
+  if (ignores.find(mm => mm.match(dep))) {
+    debug('ignore match %s, skip it', dep)
+    return false
   }
 
   return dep
@@ -91,23 +91,27 @@ function resolveFilesDeps (files, ignores) {
 
     debug('resolve file %s', file)
 
-    switch (extname) {
-      case '':    // no extname, will treat as js file
-      case '.js':
-      case '.jsx':
-      case '.es':
-        deps = analyze.parseJS(content).map(dep => {
-          return parseModule(dep, false, ignores)
-        }).filter(m => m)
-        break
-      case '.scss':
-      case '.sass':
-      case '.css':
-      case '.less':
-        deps = analyze.parseCSS(content).map(dep => {
-          return parseModule(dep, true, ignores)
-        }).filter(m => m)
-        break
+    try {
+      switch (extname) {
+        case '':    // no extname, will treat as js file
+        case '.js':
+        case '.jsx':
+        case '.es':
+          deps = analyze.parseJS(content).map(dep => {
+            return parseModule(dep, false, ignores)
+          }).filter(m => m)
+          break
+        case '.scss':
+        case '.sass':
+        case '.css':
+        case '.less':
+          deps = analyze.parseCSS(content).map(dep => {
+            return parseModule(dep, true, ignores)
+          }).filter(m => m)
+          break
+      }
+    } catch (err) {
+      console.error('[Error] parse %s failed:\n%s\n', file, err.stack || err)
     }
 
     debug('resolved deps: %s', deps)
@@ -124,19 +128,20 @@ function resolveFilesDeps (files, ignores) {
 
 /**
  * check dependencies
- * @param  {String} baseDir
+ * @param  {String} basedir
  * @param  {Object} options
  *  - checkDirs: {String} check these dirs for dependencies
  *  - ignores: {Array} ignore these modules when check dependencies
+ *  - files: {Array} check these files directly
  * @return {Array} missed dependencies
  */
-function checkDeps (baseDir, options) {
+function checkDeps (basedir, options) {
   options = options || {}
   options.checkDirs = options.checkDirs || [ '*.js' ]
   options.ignoreDirs = options.ignoreDirs || []
   options.ignores = options.ignores || []
 
-  debug('check deps: baseDir = %s, options = %j', baseDir, options)
+  debug('check deps: baseDir = %s, options = %j', basedir, options)
 
   // minimatchs
   let ignores = []
@@ -145,11 +150,11 @@ function checkDeps (baseDir, options) {
   })
 
   // find deps
-  let files = findFiles(baseDir, options.checkDirs, options.ignoreDirs)
+  let files = options.files || findFiles(basedir, options.checkDirs, options.ignoreDirs)
   let depModules = resolveFilesDeps(files, ignores)
 
   // check dependencies
-  let pkg = require(path.join(baseDir, 'package.json'))
+  let pkg = require(path.join(basedir, 'package.json'))
   let dependencies = Object.assign(
     {},
     pkg.dependencies || {},
