@@ -11,6 +11,7 @@ describe('test checks', function () {
   it('should check all deps', function () {
     let missing = checks.checkDeps(baseDir, {
       checkDirs: [
+        'lib/**/*.ts',
         'lib/**/*.js',
         'lib/**/*.css',
         'bin/*'
@@ -25,6 +26,11 @@ describe('test checks', function () {
     })
 
     assert.deepEqual(missing, [
+      "module1",
+      "module2",
+      "@scope/module3",
+      "@scope/module4",
+      "@scope/module5",
       'dep1',
       'dep2',
       'dep3',

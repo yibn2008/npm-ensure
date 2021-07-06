@@ -15,6 +15,8 @@ const DEFAULT_CHANGELOGS = [
   'history'
 ]
 const DEP_CHECK_EXTS = [
+  '.ts',
+  '.tsx',
   '.js',
   '.jsx',
   '.es',
@@ -96,6 +98,8 @@ function resolveFilesDeps (files, ignores) {
         case '':    // no extname, will treat as js file
         case '.js':
         case '.jsx':
+        case '.ts':
+        case '.tsx':
         case '.es':
           deps = analyze.parseJS(content).map(dep => {
             return parseModule(dep, false, ignores)
